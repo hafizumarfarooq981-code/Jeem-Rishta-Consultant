@@ -1,0 +1,10 @@
+{
+  "appId": "com.jeem.rishtaconsultant",
+  "appName": "Jeem Rishta Consultant",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  }
+}
