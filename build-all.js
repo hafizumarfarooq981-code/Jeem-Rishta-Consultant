@@ -1,41 +1,31 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
-console.log('=== [JEEM RISHTA VERCEL BUILD] ===');
+console.log('=== [JEEM RISHTA VERCEL ROOT PACKAGER] ===');
 
 const distDir = path.join(__dirname, 'dist');
 const mobileDist = path.join(__dirname, 'mobile-app', 'dist');
-const adminDist = path.join(__dirname, 'admin-panel', 'dist');
+const adminDist = path.join(__dirname, 'admin-panel', 'dist-admin-backup');
 
-// If pre-built assets missing, trigger build
-if (!fs.existsSync(path.join(mobileDist, 'index.html')) || !fs.existsSync(path.join(adminDist, 'index.html'))) {
-  console.log('Compiling frontend apps...');
-  try {
-    execSync('npm install --prefix mobile-app && npm run build --prefix mobile-app', { stdio: 'inherit' });
-    execSync('npm install --prefix admin-panel && npm run build --prefix admin-panel', { stdio: 'inherit' });
-  } catch (err) {
-    console.error('Frontend build error:', err);
-  }
-}
-
-// Assemble final dist
 if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true });
 }
 
-// Ensure mobile-app is at root of dist
+// 1. Matrimonial user website at root /
 if (fs.existsSync(mobileDist)) {
   fs.cpSync(mobileDist, distDir, { recursive: true });
+  console.log('✔ Matrimonial website deployed to root /');
 }
 
-// Ensure admin-panel is at dist/admin
+// 2. Admin portal at /admin/
 const distAdmin = path.join(distDir, 'admin');
-if (fs.existsSync(adminDist)) {
-  if (!fs.existsSync(distAdmin)) {
-    fs.mkdirSync(distAdmin, { recursive: true });
-  }
-  fs.cpSync(adminDist, distAdmin, { recursive: true });
+if (!fs.existsSync(distAdmin)) {
+  fs.mkdirSync(distAdmin, { recursive: true });
 }
 
-console.log('=== [BUILD COMPLETED SUCCESSFULLY] ===');
+if (fs.existsSync(adminDist)) {
+  fs.cpSync(adminDist, distAdmin, { recursive: true });
+  console.log('✔ Admin portal deployed to /admin/');
+}
+
+console.log('=== [ROOT PACKAGING COMPLETED SUCCESSFULLY] ===');
