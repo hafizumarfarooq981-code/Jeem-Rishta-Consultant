@@ -6,9 +6,8 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 
-// Load seed data
-const seedPath = path.resolve(__dirname, 'seedData.json');
-let db = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+// Load seed data directly via require so Vercel bundler inlines it
+let db = require('./seedData.json');
 
 const JWT_SECRET = 'jeem_rishta_user_jwt_secret_key_2026_super_secure';
 const ADMIN_JWT_SECRET = 'jeem_rishta_admin_jwt_secret_key_2026_super_secure';
