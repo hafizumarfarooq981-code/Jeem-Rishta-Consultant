@@ -1,7 +1,7 @@
-module.exports = (req, res) => {
+export default function handler(req, res) {
   res.status(200).json({
     status: 'ONLINE',
-    message: 'Hello from direct Vercel API endpoint!',
+    platform: 'Vercel Serverless ESM',
     timestamp: new Date().toISOString()
   });
-};
+}
