@@ -1,31 +1,53 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-console.log('=== [JEEM RISHTA VERCEL ROOT PACKAGER] ===');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+console.log('=== [JEEM RISHTA VERCEL PACKAGER] ===');
 
 const distDir = path.join(__dirname, 'dist');
-const mobileDist = path.join(__dirname, 'mobile-app', 'dist');
-const adminDist = path.join(__dirname, 'admin-panel', 'dist-admin-backup');
+const publicDir = path.join(__dirname, 'public');
 
-if (!fs.existsSync(distDir)) {
-  fs.mkdirSync(distDir, { recursive: true });
-}
+if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
+if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
 
 // 1. Matrimonial user website at root /
-if (fs.existsSync(mobileDist)) {
+const mobileDistOptions = [
+  path.join(__dirname, 'mobile-app', 'dist'),
+  path.join(__dirname, 'admin-panel', 'mobile-dist')
+];
+
+let mobileDist = mobileDistOptions.find(p => fs.existsSync(p));
+if (mobileDist) {
   fs.cpSync(mobileDist, distDir, { recursive: true });
+  fs.cpSync(mobileDist, publicDir, { recursive: true });
   console.log('✔ Matrimonial website deployed to root /');
+} else {
+  console.warn('⚠ mobileDist not found');
 }
 
 // 2. Admin portal at /admin/
 const distAdmin = path.join(distDir, 'admin');
-if (!fs.existsSync(distAdmin)) {
-  fs.mkdirSync(distAdmin, { recursive: true });
+const publicAdmin = path.join(publicDir, 'admin');
+if (!fs.existsSync(distAdmin)) fs.mkdirSync(distAdmin, { recursive: true });
+if (!fs.existsSync(publicAdmin)) fs.mkdirSync(publicAdmin, { recursive: true });
+
+const adminDistOptions = [
+  path.join(__dirname, 'admin-panel', 'dist', 'admin'),
+  path.join(__dirname, 'admin-panel', 'dist-admin-backup'),
+  path.join(__dirname, 'admin-panel', 'dist')
+];
+
+let adminDist = adminDistOptions.find(p => fs.existsSync(p));
+if (adminDist) {
+  // If the admin dist is the whole dist containing admin subfolder
+  if (fs.existsSync(path.join(adminDist, 'index.html'))) {
+    fs.cpSync(adminDist, distAdmin, { recursive: true });
+    fs.cpSync(adminDist, publicAdmin, { recursive: true });
+    console.log('✔ Admin portal deployed to /admin/');
+  }
 }
 
-if (fs.existsSync(adminDist)) {
-  fs.cpSync(adminDist, distAdmin, { recursive: true });
-  console.log('✔ Admin portal deployed to /admin/');
-}
-
-console.log('=== [ROOT PACKAGING COMPLETED SUCCESSFULLY] ===');
+console.log('=== [PACKAGING COMPLETED SUCCESSFULLY] ===');

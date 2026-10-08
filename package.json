@@ -2,9 +2,9 @@
   "name": "jeem-rishta-consultant",
   "version": "1.0.0",
   "description": "Jeem Rishta Consultant — Live Matrimonial Platform & Admin Management Portal",
+  "type": "module",
   "scripts": {
-    "build": "node build-all.js",
-    "start": "node api/index.js"
+    "build": "node build-all.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
