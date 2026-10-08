@@ -82,6 +82,19 @@ function authenticateAdmin(req, res, next) {
   }
 }
 
+// 0. API Root
+app.get(['/api', '/api/'], (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Jeem Rishta Consultant API is operational',
+    status: 'ONLINE',
+    version: '1.0.0',
+    profiles: (db.rishta_profiles || []).length,
+    users: (db.users || []).length,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // 1. Health check
 app.get(['/api/health', '/health'], (req, res) => {
   res.status(200).json({
