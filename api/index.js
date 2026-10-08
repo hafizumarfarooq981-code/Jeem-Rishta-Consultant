@@ -565,7 +565,26 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: `Endpoint ${req.method} ${req.originalUrl} not found.` });
 });
 
-// Vercel Serverless Function entry point
+// Vercel Serverless Function entry point with smart subpath reconstruction
 export default function handler(req, res) {
+  let subpath = null;
+  if (req.query && req.query.__subpath) {
+    subpath = req.query.__subpath;
+    delete req.query.__subpath;
+  } else if (req.headers && req.headers['x-matched-path']) {
+    const matched = req.headers['x-matched-path'];
+    if (matched.startsWith('/api/') && matched !== '/api') {
+      subpath = matched.slice(5);
+    }
+  }
+
+  if (subpath) {
+    if (!subpath.startsWith('/')) subpath = '/' + subpath;
+    const qKeys = req.query ? Object.keys(req.query) : [];
+    const qs = qKeys.length > 0 ? '?' + new URLSearchParams(req.query).toString() : '';
+    req.url = '/api' + subpath + qs;
+  }
+
   return app(req, res);
 }
+
